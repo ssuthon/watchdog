@@ -1,9 +1,10 @@
 #define ON_DURATION_THRESHOLD  100
-#define OFF_DURATION_THRESHOLD 100
+#define OFF_DURATION_THRESHOLD 200
+#define CHANGE_DURATION_THRESHOLD 200
 #define OFF_FAILSAFE_DURATION_THRESHOLD 4*1000 //4 seconds
 #define MA_DURATION 30*60*1000  //30 mins
-#define MA_DURATION_WHEN_RESET 60000  //1 min
-#define ALARM_THRESHOLD 8*1000  //8 seconds
+#define MA_DURATION_WHEN_RESET 120000  //2 min
+#define ALARM_THRESHOLD 10*1000  //8 seconds
 #define PIN_LED 1
 #define PIN_AUDIO_PHYSICAL 2
 #define PIN_AUDIO_ANALOG 1  //physical pin = 2
@@ -49,6 +50,10 @@ void loop() {
   }
   sound_changed = 0;
   
+  if((current_stamp - last_decision) < CHANGE_DURATION_THRESHOLD){
+    return;
+  }
+  
   if((last_detected - first_detected) > ON_DURATION_THRESHOLD && first_detected != 0){
       sound_changed = sound_on != 1;
       sound_on = 1;
@@ -59,6 +64,7 @@ void loop() {
       sound_changed = sound_on != 0;
       sound_on = 0;      
   }
+  
   
 
   if(sound_changed){ 
@@ -78,10 +84,10 @@ void loop() {
   }
 
   if(digitalRead(PIN_SWITCH) == HIGH){    
-    /*if((ma_duration_end - current_stamp) < MA_DURATION * 0.1){
+    if((ma_duration_end - current_stamp) < MA_DURATION * 0.1){
       ma_duration_end =  current_stamp + MA_DURATION;  
       ma_monitor_tick = 0;     
-    }*/
+    }
   }
   
   if(ma_monitor_tick > 5){
@@ -105,9 +111,11 @@ void onMonitorAlarm(){
 }
 
 void onReset(){
-  showEvent(30);
+  showEvent(10);
   ma_duration_end = current_stamp + MA_DURATION_WHEN_RESET;  
-  digitalWrite(PIN_RELAY, HIGH);
+  /*digitalWrite(PIN_RELAY, HIGH);
+  delay(2000);
+  digitalWrite(PIN_RELAY, LOW);*/
   last_decision = current_stamp;
   ma_monitor_tick = 0;
 }
@@ -115,7 +123,7 @@ void onReset(){
 void showEvent(int times){
   for(int i = 0; i < times; i++){
       digitalWrite(PIN_LED, HIGH); 
-      delay(50);
+      delay(100);
       digitalWrite(PIN_LED, LOW); 
       delay(50);
   }
