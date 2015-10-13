@@ -38,7 +38,7 @@ void loop() {
   //delay(10);              
   
   current_stamp = millis();
-  is_detected = (analogRead(PIN_AUDIO_ANALOG) * (5/1023.0)) > 0.1; 
+  is_detected = (analogRead(PIN_AUDIO_ANALOG) * (5/1023.0)) > 0.08; 
   if(is_detected){
     if(first_detected == 0){
       first_detected = current_stamp;
