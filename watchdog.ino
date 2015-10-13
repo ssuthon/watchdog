@@ -33,6 +33,8 @@ unsigned long current_stamp = 0;
 unsigned long first_detected = 0;
 unsigned long last_detected = 0;
 unsigned long last_decision = 0;
+unsigned long ma_monitor_tick = 0;
+
 short is_detected = 0;
 
 // the loop routine runs over and over again forever:
@@ -67,14 +69,25 @@ void loop() {
       }else{    
           digitalWrite(PIN_LED, LOW);
       }*/
-      showEvent(1);
+      if(ma_duration_end > 0){
+        ma_monitor_tick ++;
+      }
+      
+      showEvent(ma_state ? 2 : 1);
+      
   }
 
   if(digitalRead(PIN_SWITCH) == HIGH){    
     /*if((ma_duration_end - current_stamp) < MA_DURATION * 0.1){
-      ma_duration_end =  current_stamp + MA_DURATION;       
+      ma_duration_end =  current_stamp + MA_DURATION;  
+      ma_monitor_tick = 0;     
     }*/
   }
+  
+  if(ma_monitor_tick > 5){
+    ma_duration_end = 0;    
+  }
+  
   ma_state = (ma_duration_end > current_stamp); 
     
   if((current_stamp - last_decision) > ALARM_THRESHOLD){
@@ -92,10 +105,11 @@ void onMonitorAlarm(){
 }
 
 void onReset(){
-  showEvent(10);
+  showEvent(30);
   ma_duration_end = current_stamp + MA_DURATION_WHEN_RESET;  
   digitalWrite(PIN_RELAY, HIGH);
   last_decision = current_stamp;
+  ma_monitor_tick = 0;
 }
 
 void showEvent(int times){
