@@ -8,7 +8,7 @@
 #define PIN_LED 1
 #define PIN_AUDIO_PHYSICAL 2
 #define PIN_AUDIO_ANALOG 1  //physical pin = 2
-#define PIN_RELAY 4
+#define PIN_RELAY 0
 #define PIN_SWITCH 5
 
 void onMonitorAlarm();
@@ -17,16 +17,6 @@ void showEvent(int);
 
 unsigned long ma_duration_end = 0;
 unsigned short ma_state = 0;
-
-
-// the setup routine runs once when you press reset:
-void setup() {                
-  // initialize the digital pin as an output.
-  pinMode(PIN_LED, OUTPUT); //LED on Model B
-  pinMode(PIN_AUDIO_PHYSICAL, INPUT);
-  pinMode(PIN_RELAY, OUTPUT);
-  pinMode(PIN_SWITCH, INPUT);  //digital  
-}
 
 short sound_on = 0;
 short sound_changed = 0;
@@ -37,6 +27,23 @@ unsigned long last_decision = 0;
 unsigned long ma_monitor_tick = 0;
 
 short is_detected = 0;
+
+
+
+// the setup routine runs once when you press reset:
+void setup() {                
+  // initialize the digital pin as an output.
+  pinMode(PIN_LED, OUTPUT); //LED on Model B
+  pinMode(PIN_AUDIO_PHYSICAL, INPUT);
+  pinMode(PIN_RELAY, OUTPUT);
+  //pinMode(PIN_SWITCH, INPUT);  //digital  
+
+  digitalWrite(PIN_RELAY, LOW);
+
+  //start with MA mode
+  ma_duration_end =  millis() + MA_DURATION_WHEN_RESET;  
+  ma_monitor_tick = 0;
+}
 
 // the loop routine runs over and over again forever:
 void loop() {
@@ -113,9 +120,9 @@ void onMonitorAlarm(){
 void onReset(){
   showEvent(10);
   ma_duration_end = current_stamp + MA_DURATION_WHEN_RESET;  
-  /*digitalWrite(PIN_RELAY, HIGH);
+  digitalWrite(PIN_RELAY, HIGH);
   delay(2000);
-  digitalWrite(PIN_RELAY, LOW);*/
+  digitalWrite(PIN_RELAY, LOW);
   last_decision = current_stamp;
   ma_monitor_tick = 0;
 }
