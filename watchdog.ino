@@ -38,7 +38,7 @@ void setup() {
   pinMode(PIN_RELAY, OUTPUT);
   //pinMode(PIN_SWITCH, INPUT);  //digital  
 
-  digitalWrite(PIN_RELAY, LOW);
+  digitalWrite(PIN_RELAY, HIGH);
 
   //start with MA mode
   ma_duration_end =  millis() + MA_DURATION_WHEN_RESET;  
@@ -120,9 +120,9 @@ void onMonitorAlarm(){
 void onReset(){
   showEvent(10);
   ma_duration_end = current_stamp + MA_DURATION_WHEN_RESET;  
-  digitalWrite(PIN_RELAY, HIGH);
-  delay(2000);
   digitalWrite(PIN_RELAY, LOW);
+  delay(2000);
+  digitalWrite(PIN_RELAY, HIGH);
   last_decision = current_stamp;
   ma_monitor_tick = 0;
 }
