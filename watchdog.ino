@@ -1,10 +1,12 @@
+
+#define MA_DURATION 1800000  //30 mins
+#define MA_DURATION_WHEN_RESET 120000  //2 min
+#define ALARM_THRESHOLD 10000  //10 seconds
+
 #define ON_DURATION_THRESHOLD  100
 #define OFF_DURATION_THRESHOLD 200
 #define CHANGE_DURATION_THRESHOLD 200
-#define OFF_FAILSAFE_DURATION_THRESHOLD 4*1000 //4 seconds
-#define MA_DURATION 30*60*1000  //30 mins
-#define MA_DURATION_WHEN_RESET 120000  //2 min
-#define ALARM_THRESHOLD 10*1000  //8 seconds
+#define OFF_FAILSAFE_DURATION_THRESHOLD 4000 //4 seconds
 #define PIN_LED 1
 #define PIN_AUDIO_PHYSICAL 2
 #define PIN_AUDIO_ANALOG 1  //physical pin = 2
@@ -36,13 +38,14 @@ void setup() {
   pinMode(PIN_LED, OUTPUT); //LED on Model B
   pinMode(PIN_AUDIO_PHYSICAL, INPUT);
   pinMode(PIN_RELAY, OUTPUT);
-  //pinMode(PIN_SWITCH, INPUT);  //digital  
+  pinMode(PIN_SWITCH, INPUT);  //digital  
 
   digitalWrite(PIN_RELAY, HIGH);
 
   //start with MA mode
   ma_duration_end =  millis() + MA_DURATION_WHEN_RESET;  
   ma_monitor_tick = 0;
+  ma_state = 1;
 }
 
 // the loop routine runs over and over again forever:
@@ -82,7 +85,7 @@ void loop() {
       }else{    
           digitalWrite(PIN_LED, LOW);
       }*/
-      if(ma_duration_end > 0){
+      if(ma_state){
         ma_monitor_tick ++;
       }
       
@@ -93,7 +96,8 @@ void loop() {
   if(digitalRead(PIN_SWITCH) == HIGH){    
     if((ma_duration_end - current_stamp) < MA_DURATION * 0.1){
       ma_duration_end =  current_stamp + MA_DURATION;  
-      ma_monitor_tick = 0;     
+      ma_monitor_tick = 0;    
+      showEvent(4); 
     }
   }
   
@@ -101,7 +105,7 @@ void loop() {
     ma_duration_end = 0;    
   }
   
-  ma_state = (ma_duration_end > current_stamp); 
+  ma_state = (ma_duration_end > current_stamp) ? 1 : 0; 
     
   if((current_stamp - last_decision) > ALARM_THRESHOLD){
     onMonitorAlarm();
