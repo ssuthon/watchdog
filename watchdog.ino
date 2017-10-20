@@ -7,9 +7,8 @@
 #define OFF_DURATION_THRESHOLD 200
 #define CHANGE_DURATION_THRESHOLD 200
 #define OFF_FAILSAFE_DURATION_THRESHOLD 4000 //4 seconds
-#define PIN_LED 1
-#define PIN_AUDIO_PHYSICAL 2
-#define PIN_AUDIO_ANALOG 1  //physical pin = 2
+#define PIN_LED 13
+#define PIN_DIGITAL 7
 #define PIN_RELAY 0
 #define PIN_SWITCH 5
 
@@ -28,7 +27,7 @@ unsigned long last_detected = 0;
 unsigned long last_decision = 0;
 unsigned long ma_monitor_tick = 0;
 
-short is_detected = 0;
+int is_detected = 0;
 
 
 
@@ -36,7 +35,7 @@ short is_detected = 0;
 void setup() {                
   // initialize the digital pin as an output.
   pinMode(PIN_LED, OUTPUT); //LED on Model B
-  pinMode(PIN_AUDIO_PHYSICAL, INPUT);
+  pinMode(PIN_DIGITAL, INPUT);
   pinMode(PIN_RELAY, OUTPUT);
   pinMode(PIN_SWITCH, INPUT);  //digital  
 
@@ -51,7 +50,7 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
   current_stamp = millis();
-  is_detected = (analogRead(PIN_AUDIO_ANALOG) * (5/1023.0)) > 0.1; 
+  is_detected = digitalRead(PIN_DIGITAL); 
   if(is_detected){    
     if(first_detected == 0){
       first_detected = current_stamp;
