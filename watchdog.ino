@@ -8,9 +8,9 @@
 #define CHANGE_DURATION_THRESHOLD 200
 #define OFF_FAILSAFE_DURATION_THRESHOLD 4000 //4 seconds
 #define PIN_LED 13
-#define PIN_DIGITAL 7
-#define PIN_RELAY 0
-#define PIN_SWITCH 5
+#define PIN_DIGITAL 14
+#define PIN_RELAY 7
+#define PIN_SWITCH 4
 
 void onMonitorAlarm();
 void onReset();
