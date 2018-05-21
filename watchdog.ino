@@ -11,6 +11,7 @@
 #define PIN_DIGITAL 14
 #define PIN_RELAY 7
 #define PIN_SWITCH 4
+#define MA_TICK_TO_END 15
 
 void onMonitorAlarm();
 void onReset();
@@ -30,10 +31,10 @@ unsigned long ma_monitor_tick = 0;
 int is_detected = 0;
 
 
-
 // the setup routine runs once when you press reset:
-void setup() {                
-  // initialize the digital pin as an output.
+void setup() {             
+  //Serial.begin(9600);   
+  //initialize the digital pin as an output.
   pinMode(PIN_LED, OUTPUT); //LED on Model B
   pinMode(PIN_DIGITAL, INPUT);
   pinMode(PIN_RELAY, OUTPUT);
@@ -88,20 +89,17 @@ void loop() {
         ma_monitor_tick ++;
       }
       
-      showEvent(ma_state ? 2 : 1);
-      
+      showEvent(ma_state ? 2 : 1);           
   }
 
-  if(digitalRead(PIN_SWITCH) == HIGH){    
-    if((ma_duration_end - current_stamp) < MA_DURATION * 0.1){
-      ma_duration_end =  current_stamp + MA_DURATION;  
-      ma_monitor_tick = 0;    
-      showEvent(4); 
-    }
+  if(digitalRead(PIN_SWITCH) == HIGH){        
+    ma_duration_end =  current_stamp + MA_DURATION;  
+    ma_monitor_tick = 0;    
+    showEvent(4);     
   }
   
-  if(ma_monitor_tick > 5){
-    ma_duration_end = 0;    
+  if(ma_monitor_tick > MA_TICK_TO_END){
+    ma_duration_end = 0;        
   }
   
   ma_state = (ma_duration_end > current_stamp) ? 1 : 0; 
